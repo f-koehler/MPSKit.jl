@@ -1,0 +1,9 @@
+authors = ["Fabian Köhler <fabian.koehler@protonmail.ch>"]
+name = "MPSKit"
+uuid = "b07acf17-ba04-41c2-93f4-9e8c134c6ecc"
+version = "0.0.1"
+
+[deps]
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
+PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
