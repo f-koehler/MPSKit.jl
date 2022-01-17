@@ -1,3 +1,7 @@
+module DMRG
+
+export runDMRG
+
 using ArgParse
 using TOML
 using ITensors
@@ -6,7 +10,7 @@ include("Models/Models.jl")
 using .Models
 
 
-function sweepsFromTOML(toml::Vector{Dict{String,Any}})::Sweeps
+function getSweepsFromTOML(toml::Vector{Dict{String,Any}})::Sweeps
     sweeps = Sweeps(length(toml))
     for (i, sweep) in enumerate(toml)
         sweeps.maxdim[i] = get(sweep, "maxdim", sweeps.maxdim[i])
@@ -19,8 +23,8 @@ end
 
 
 
-function main(args::Vector{String})
-    s = ArgParseSettings(description = "Compute ground states using DMRG.")
+function runDMRG(args::Vector{String})
+    s = ArgParseSettings(description = "Compute eigenstates using DMRG.")
     @add_arg_table! s begin
         "-i", "--input"
         arg_type = String
@@ -36,15 +40,38 @@ function main(args::Vector{String})
     hamiltonian = model.getHamiltonian(sites, parameters)
     psi0 = randomMPS(sites)
 
-    sweeps = sweepsFromTOML(config["dmrg"]["sweeps"])
-    _, psi = dmrg(hamiltonian, psi0, sweeps)
+    sweeps = getSweepsFromTOML(config["dmrg"]["sweeps"])
+    num_states = get(config["dmrg"], "states", 1)
+    overlap_penalty = get(config["dmrg"], "overlap_penalty", 10)
 
-    for (name, operator) in model.getObservables(sites, parameters)
-        value = inner(psi, operator, psi)
-        squared = inner(operator, psi, operator, psi)
-        variance = squared - (value^2)
-        println(name, " = ", value, " ± ", variance)
+    states = MPS[]
+    for j = 1:num_states
+        if length(states) == 0
+            _, psi = dmrg(hamiltonian, psi0, sweeps)
+            push!(states, psi)
+            psi0 = psi
+        else
+            _, psi = dmrg(hamiltonian, states, psi0, sweeps; overlap_penalty)
+            push!(states, psi)
+            psi0 = psi
+        end
+    end
+
+    for (i, state) in enumerate(states)
+        print(i, ":")
+        for (name, operator) in model.getObservables(sites, parameters)
+            value = inner(state, operator, state)
+            squared = inner(operator, state, operator, state)
+            variance = squared - (value^2)
+            println("\t", name, " = ", value, " ± ", variance)
+        end
+    end
+
+    for i = 1:length(states)
+        for j = 1:i
+            println("<psi_", i, "|psi_", j, "> = ", inner(states[i], states[j]))
+        end
     end
 end
 
-main(ARGS)
+end

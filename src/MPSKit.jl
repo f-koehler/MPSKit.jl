@@ -1,3 +1,9 @@
-function julia_main()::Cint
-    return 0
+module MPSKit
+
+include("DMRG.jl")
+using .DMRG
+
+include("TEBD.jl")
+using .TEBD
+
 end

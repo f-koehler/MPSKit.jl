@@ -7,6 +7,8 @@ name = "TransverseIsing1D"
 pbc = false
 
 [dmrg]
+overlap_penalty = 10
+states = 1
 sweeps = [
   {"maxdim" = 50, "mindim" = 1, "cutoff" = 1e-6, "noise" = 1e-7},
   {"maxdim" = 80, "mindim" = 1, "cutoff" = 1e-8, "noise" = 1e-8},

@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - 1.7.1
+          - "1.7.1"
         os:
           - ubuntu-latest
           - windows-latest
@@ -26,5 +26,5 @@ jobs:
           version: ${{ matrix.version }}
       - name: Build package.
         uses: julia-actions/julia-buildpkg@latest
-      - name: Run TransverseIsing1D example.
-        run: julia --project=. src/DMRG.jl -i examples/TransverseIsing1D.toml
+      # - name: Run TransverseIsing1D example.
+      #   run: julia --project=. src/DMRG.jl -i examples/TransverseIsing1D.toml
