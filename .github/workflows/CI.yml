@@ -6,10 +6,17 @@ on:
     branches: [main]
 jobs:
   build:
-    runs-on:
-      - ubuntu-latest
-      - windows-latest
-      - macOS-latest]
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - 1.7.1
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest]
     steps:
       - name: Checkout repository.
         uses: actions/checkout@v2
@@ -28,7 +35,7 @@ jobs:
       - name: Install julia.
         uses: julia-actions/setup-julia@latest
         with:
-          version: 1.7.1
+          version: ${{ matrix.version }}
       - name: Build package.
         uses: julia-actions/julia-buildpkg@latest
       - name: Run TransverseIsing1D example.
