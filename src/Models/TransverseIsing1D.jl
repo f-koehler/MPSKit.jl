@@ -93,10 +93,10 @@ function getGatesEven(sites::Vector{Index{Int64}}, dt::Float64, parameters::Dict
         push!(gates, exp(-1.0im * dt * hj))
     end
 
-    if L % 2 == 0
-        hj = -2.0 * hx * op("Sx", sites[L]) - 2.0 * hz * op("Sz", sites[L])
-        push!(gates, exp(-1.0im * dt * hj))
-    end
+    # if L % 2 == 0
+    #     hj = -2.0 * hx * op("Sx", sites[L]) - 2.0 * hz * op("Sz", sites[L])
+    #     push!(gates, exp(-1.0im * dt * hj))
+    # end
 
     return gates
 end
@@ -124,10 +124,10 @@ function getGatesOdd(sites::Vector{Index{Int64}}, dt::Float64, parameters::Dict{
         push!(gates, exp(-1.0im * dt * hj))
     end
 
-    if L % 2 == 1
-        hj = -2.0 * hx * op("Sx", sites[L]) - 2.0 * hz * op("Sz", sites[L])
-        push!(gates, exp(-1.0im * dt * hj))
-    end
+    # if L % 2 == 1
+    #     hj = -2.0 * hx * op("Sx", sites[L]) - 2.0 * hz * op("Sz", sites[L])
+    #     push!(gates, exp(-1.0im * dt * hj))
+    # end
 
     return gates
 end

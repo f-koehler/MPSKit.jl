@@ -11,11 +11,16 @@ tinf = @snoopi_deep begin
     result = runDMRG(model, parameters, options)
 
     storeDMRGResult("dmrg.h5", result)
+
+    state = result.states[1]
+
+    parameters_quenched = parameters
+    parameters_quenched["hx"] = 1.5
+    tebd_options = TEBDOptions(2, 2.0, 0.1, 10, 1e-12)
+    # runTEBD(state, model, parameters_quenched, tebd_options)
 end
 
 using SnoopCompile
 
 ttot, pcs = SnoopCompile.parcel(tinf)
-println(ttot)
-println(pcs)
 SnoopCompile.write(joinpath(pwd(), "src", "Precompile"), pcs)

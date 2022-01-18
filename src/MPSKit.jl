@@ -12,6 +12,7 @@ include("Models.jl")
 export getModel
 
 include("TEBD.jl")
+export runTEBD, TEBDOptions
 
 include("Util.jl")
 export disableThreading
