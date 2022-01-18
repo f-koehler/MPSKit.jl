@@ -1,0 +1,3 @@
+*.jl
+!precompile_MPSKit.jl
+!precompile_MPSKit.TransverseIsing1D.jl

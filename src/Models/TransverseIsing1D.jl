@@ -119,4 +119,10 @@ function getGatesOdd(sites::Vector{Index{Int64}}, dt::Float64, parameters::Dict{
     return gates
 end
 
+
+if Base.VERSION >= v"1.4.2"
+    include("../Precompile/precompile_MPSKit.TransverseIsing1D.jl")
+    _precompile_()
+end
+
 end
