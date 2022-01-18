@@ -1,9 +1,13 @@
 module MPSKit
 
+using ITensors
+
 include("DMRG.jl")
-using .DMRG
+export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps
+
+include("Models.jl")
+export getModel
 
 include("TEBD.jl")
-using .TEBD
 
 end

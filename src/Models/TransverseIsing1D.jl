@@ -4,54 +4,52 @@ using ITensors
 
 include("SpinHalf.jl")
 
-export Parameters, fromTOML, getSites, getHamiltonian, getObservables, getGatesEven, getGatesOdd
+export fromDict, getSites, getHamiltonian, getObservables, getGatesEven, getGatesOdd
 
-mutable struct Parameters
-    L::Int64
-    J::Float64
-    hx::Float64
-    hz::Float64
-    pbc::Bool
-end
 
-function fromTOML(toml::Dict{String,Any})::Parameters
-    return Parameters(
-        get(toml, "L", 16),
-        get(toml, "J", 1.0),
-        get(toml, "hx", 1.0),
-        get(toml, "hz", 0.5),
-        get(toml, "pbc", false)
+function getDefaultParameters()::Dict{String,Any}
+    return Dict{String,Any}(
+        "L" => 16,
+        "J" => 1.0,
+        "hx" => 1.0,
+        "hz" => 1.0,
+        "pbc" => false,
     )
 end
 
-function getSites(parameters::Parameters)::Vector{Index{Int64}}
-    sites = siteinds("S=1/2", parameters.L)
+function getSites(parameters::Dict{String,Any})::Vector{Index{Int64}}
+    sites = siteinds("S=1/2", parameters["L"])
     return sites
 end
 
-function getHamiltonian(sites::Vector{Index{Int64}}, parameters::Parameters)::MPO
+function getHamiltonian(sites::Vector{Index{Int64}}, parameters::Dict{String,Any})::MPO
     ampo = OpSum()
 
-    for j = 1:parameters.L-1
-        ampo += -4.0 * parameters.J, "Sz", j, "Sz", j + 1
+    L = parameters["L"]
+    J = parameters["J"]
+    hx = parameters["hx"]
+    hz = parameters["hz"]
+
+    for j = 1:L-1
+        ampo += -4.0 * J, "Sz", j, "Sz", j + 1
     end
 
-    if parameters.pbc
-        ampo += -4.0 * parameters.J, "Sz", j, "Sz", j + 1
+    if parameters["pbc"]
+        ampo += -4.0 * J, "Sz", L, "Sz", 1
     end
 
-    for j = 1:parameters.L
-        ampo += -2.0 * parameters.hx, "Sx", j
+    for j = 1:L
+        ampo += -2.0 * hx, "Sx", j
     end
 
-    for j = 1:parameters.L
-        ampo += -2.0 * parameters.hz, "Sz", j
+    for j = 1:L
+        ampo += -2.0 * hz, "Sz", j
     end
 
     return MPO(ampo, sites)
 end
 
-function getObservables(sites::Vector{Index{Int64}}, parameters::Parameters)::Dict{String,MPO}
+function getObservables(sites::Vector{Index{Int64}}, parameters::Dict{String,Any})::Dict{String,MPO}
     return Dict(
         "H" => getHamiltonian(sites, parameters),
         "Sx" => getTotalSx(sites),
@@ -59,52 +57,62 @@ function getObservables(sites::Vector{Index{Int64}}, parameters::Parameters)::Di
     )
 end
 
-function getGatesEven(sites::Vector{Index{Int64}}, dt::Float64, parameters::Parameters)::ITensor[]
-    if parameters.pbc
-        throw(DomainError(parameters.pbc, "not implemented for periodic boundary conditions"))
+function getGatesEven(sites::Vector{Index{Int64}}, dt::Float64, parameters::Dict{String,Any})::Vector{ITensor}
+    if parameters["pbc"]
+        throw(DomainError(parameters["pbc"], "not implemented for periodic boundary conditions"))
     end
 
-    gates = ITensor[]
+    gates = Vector{ITensor}()
 
-    for j = 2:2:parameters.L-1
+    L = parameters["L"]
+    J = parameters["J"]
+    hx = parameters["hx"]
+    hz = parameters["hz"]
+
+    for j = 2:2:L-1
         s1 = sites[j]
         s2 = sites[j+1]
 
-        hj = -4.0 * parameters.J * op("Sz", s1) * op("Sz", s2)
-        -2.0 * parameters.hx * op("Sx", s1)
-        -2.0 * parameters.hz * op("Sz", s1)
+        hj = -4.0 * J * op("Sz", s1) * op("Sz", s2)
+        -2.0 * hx * op("Sx", s1)
+        -2.0 * hz * op("Sz", s1)
 
         push!(gates, exp(-1.0im * dt * hj))
     end
 
     if L % 2 == 0
-        hj = -2.0 * parameters.hx * op("Sx", sites[parameters.L]) - 2.0 * parameters.hz * op("Sz", sites[parameters.L])
+        hj = -2.0 * hx * op("Sx", sites[L]) - 2.0 * hz * op("Sz", sites[L])
         push!(gates, exp(-1.0im * dt * hj))
     end
 
     return gates
 end
 
-function getGatesOdd(sites::Vector{Index{Int64}}, dt::Float64, parameters::Parameters)::ITensor[]
-    if parameters.pbc
-        throw(DomainError(parameters.pbc, "not implemented for periodic boundary conditions"))
+function getGatesOdd(sites::Vector{Index{Int64}}, dt::Float64, parameters::Dict{String,Any})::Vector{ITensor}
+    if parameters["pbc"]
+        throw(DomainError(parameters["pbc"], "not implemented for periodic boundary conditions"))
     end
 
-    gates = ITensor[]
+    gates = Vector{ITensor}()
 
-    for j = 1:2:parameters.L-1
+    L = parameters["L"]
+    J = parameters["J"]
+    hx = parameters["hx"]
+    hz = parameters["hz"]
+
+    for j = 1:2:L-1
         s1 = sites[j]
         s2 = sites[j+1]
 
-        hj = -4.0 * parameters.J * op("Sz", s1) * op("Sz", s2)
-        -2.0 * parameters.hx * op("Sx", s1)
-        -2.0 * parameters.hz * op("Sz", s1)
+        hj = -4.0 * J * op("Sz", s1) * op("Sz", s2)
+        -2.0 * hx * op("Sx", s1)
+        -2.0 * hz * op("Sz", s1)
 
         push!(gates, exp(-1.0im * dt * hj))
     end
 
     if L % 2 == 1
-        hj = -2.0 * parameters.hx * op("Sx", sites[parameters.L]) - 2.0 * parameters.hz * op("Sz", sites[parameters.L])
+        hj = -2.0 * hx * op("Sx", sites[L]) - 2.0 * hz * op("Sz", sites[L])
         push!(gates, exp(-1.0im * dt * hj))
     end
 

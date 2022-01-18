@@ -1,6 +1,4 @@
-module Models
-
-include("TransverseIsing1D.jl")
+include("Models/TransverseIsing1D.jl")
 using .TransverseIsing1D
 
 function getModel(name::String)::Module
@@ -9,6 +7,4 @@ function getModel(name::String)::Module
     end
 
     throw(DomainError(name, "Model not found"))
-end
-
 end

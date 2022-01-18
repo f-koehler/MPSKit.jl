@@ -1,77 +1,61 @@
-module DMRG
+mutable struct DMRGOptions
+    num_states::Int64
+    sweeps::Sweeps
+    overlap_penalty::Float64
+end
 
-export runDMRG
+mutable struct DMRGResults
+    states::Vector{MPS}
+    overlaps::Array{Float64,2}
+    observables::Vector{Dict{String,Tuple{Float64,Float64,Float64}}}
+end
 
-using ArgParse
-using TOML
-using ITensors
-
-include("Models/Models.jl")
-using .Models
-
-
-function getSweepsFromTOML(toml::Vector{Dict{String,Any}})::Sweeps
-    sweeps = Sweeps(length(toml))
-    for (i, sweep) in enumerate(toml)
-        sweeps.maxdim[i] = get(sweep, "maxdim", sweeps.maxdim[i])
-        sweeps.mindim[i] = get(sweep, "mindim", sweeps.mindim[i])
-        sweeps.cutoff[i] = get(sweep, "cutoff", sweeps.cutoff[i])
-        sweeps.noise[i] = get(sweep, "noise", sweeps.noise[i])
-    end
+function getDefaultSweeps()::Sweeps
+    sweeps = Sweeps(8)
+    setmaxdim!(sweeps, 50, 80, 100, 150, 200, 250, 300, 500)
+    setmindim!(sweeps, 1, 1, 1, 1, 1, 1, 1, 1)
+    setcutoff!(sweeps, 1e-6, 1e-8, 1e-10, 1e-12, 1e-12, 1e-12, 0.0, 0.0)
+    setnoise!(sweeps, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 0.0, 0.0)
     return sweeps
 end
 
 
-
-function runDMRG(args::Vector{String})
-    s = ArgParseSettings(description = "Compute eigenstates using DMRG.")
-    @add_arg_table! s begin
-        "-i", "--input"
-        arg_type = String
-    end
-
-    parsed_args = parse_args(args, s)
-    config = TOML.parsefile(parsed_args["input"])
-
-    model = Models.getModel(config["model"]["name"])
-
-    parameters = model.fromTOML(config["model"])
+function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptions)::DMRGResults
     sites = model.getSites(parameters)
     hamiltonian = model.getHamiltonian(sites, parameters)
     psi0 = randomMPS(sites)
 
-    sweeps = getSweepsFromTOML(config["dmrg"]["sweeps"])
-    num_states = get(config["dmrg"], "states", 1)
-    overlap_penalty = get(config["dmrg"], "overlap_penalty", 10)
+    results = DMRGResults(
+        Vector{MPS}(),
+        zeros(Float64, options.num_states, options.num_states),
+        Vector{Dict{String,Tuple{Float64,Float64,Float64}}}()
+    )
 
-    states = MPS[]
-    for j = 1:num_states
-        if length(states) == 0
-            _, psi = dmrg(hamiltonian, psi0, sweeps)
-            push!(states, psi)
+    for j = 1:options.num_states
+        if length(results.states) == 0
+            _, psi = dmrg(hamiltonian, psi0, options.sweeps)
+            push!(results.states, psi)
             psi0 = psi
         else
-            _, psi = dmrg(hamiltonian, states, psi0, sweeps; overlap_penalty)
-            push!(states, psi)
+            _, psi = dmrg(hamiltonian, result.states, psi0, options.sweeps; options.overlap_penalty)
+            push!(result.states, psi)
             psi0 = psi
         end
     end
 
-    for (i, state) in enumerate(states)
-        print(i, ":")
+    for (i, state) in enumerate(results.states)
         for (name, operator) in model.getObservables(sites, parameters)
             value = inner(state, operator, state)
             squared = inner(operator, state, operator, state)
             variance = squared - (value^2)
-            println("\t", name, " = ", value, " ± ", variance)
+            #         # results.observables[i][name] = (value)
         end
     end
 
-    for i = 1:length(states)
-        for j = 1:i
-            println("<psi_", i, "|psi_", j, "> = ", inner(states[i], states[j]))
-        end
-    end
-end
-
+    # for i = 1:length(states)
+    #     for j = 1:i
+    #         println("<psi_", i, "|psi_", j, "> = ", inner(states[i], states[j]))
+    #     end
+    # end
+    return results
 end
