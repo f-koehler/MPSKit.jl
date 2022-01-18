@@ -8,6 +8,8 @@ mutable struct DMRGResults
     states::Vector{MPS}
     overlaps::Array{Float64,2}
     observables::Vector{Dict{String,Tuple{Float64,Float64,Float64}}}
+    localOperators::Vector{Dict{String,Vector{Float64}}}
+    correlationFunctions::Vector{Dict{String,Matrix{Float64}}}
 end
 
 function getDefaultSweeps()::Sweeps
@@ -38,6 +40,22 @@ function storeDMRGResult(file::String, result::DMRGResults)
         end
     end
 
+    # store local operators
+    for (i, localOperators) in enumerate(result.localOperators)
+        grp_state = HDF5.create_group(fptr, string("local_operators_", string(i)))
+        for (name, values) in localOperators
+            write(grp_state, name, values)
+        end
+    end
+
+    # store correlation functions operators
+    for (i, correlationFunctions) in enumerate(result.correlationFunctions)
+        grp_state = HDF5.create_group(fptr, string("correlation_functions_", string(i)))
+        for (name, values) in correlationFunctions
+            write(grp_state, name, values)
+        end
+    end
+
     # store overlaps
     HDF5.write(fptr, "overlaps", result.overlaps)
 
@@ -53,7 +71,9 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
     results = DMRGResults(
         Vector{MPS}(),
         zeros(Float64, options.num_states, options.num_states),
-        Vector{Dict{String,Tuple{Float64,Float64,Float64}}}()
+        Vector{Dict{String,Tuple{Float64,Float64,Float64}}}(),
+        Vector{Dict{String,Vector{Float64}}}(),
+        Vector{Dict{String,Matrix{Float64}}}()
     )
 
     for j = 1:options.num_states
@@ -75,6 +95,16 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
             squared = inner(operator, state, operator, state)
             variance = squared - (value^2)
             results.observables[i][name] = (value, squared, variance)
+        end
+
+        push!(results.localOperators, Dict{String,Vector{Float64}}())
+        for (name, localOperator) in model.getLocalOperators()
+            results.localOperators[i][name] = expect(state, localOperator[2]) * localOperator[1]
+        end
+
+        push!(results.correlationFunctions, Dict{String,Matrix{Float64}}())
+        for (name, correlationFunction) in model.getCorrelationFunctions()
+            results.correlationFunctions[i][name] = correlation_matrix(state, correlationFunction[2], correlationFunction[3]) * correlationFunction[1]
         end
     end
 

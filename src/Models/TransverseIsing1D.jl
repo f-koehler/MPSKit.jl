@@ -57,6 +57,19 @@ function getObservables(sites::Vector{Index{Int64}}, parameters::Dict{String,Any
     )
 end
 
+function getLocalOperators()::Dict{String,Tuple{Float64,String}}
+    return Dict(
+        "Sx" => (2.0, "Sx"),
+        "Sz" => (2.0, "Sz"),
+    )
+end
+
+function getCorrelationFunctions()::Dict{String,Tuple{Float64,String,String}}
+    return Dict(
+        "SzSz" => (4.0, "Sz", "Sz"),
+    )
+end
+
 function getGatesEven(sites::Vector{Index{Int64}}, dt::Float64, parameters::Dict{String,Any})::Vector{ITensor}
     if parameters["pbc"]
         throw(DomainError(parameters["pbc"], "not implemented for periodic boundary conditions"))
