@@ -12,7 +12,7 @@ function getDefaultParameters()::Dict{String,Any}
         "L" => 16,
         "J" => 1.0,
         "hx" => 1.0,
-        "hz" => 1.0,
+        "hz" => 0.5,
         "pbc" => false,
     )
 end

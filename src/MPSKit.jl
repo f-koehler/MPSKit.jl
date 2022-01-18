@@ -1,9 +1,10 @@
 module MPSKit
 
 using ITensors
+import ITensors.HDF5
 
 include("DMRG.jl")
-export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps
+export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps, storeDMRGResult
 
 include("Models.jl")
 export getModel

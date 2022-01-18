@@ -19,6 +19,31 @@ function getDefaultSweeps()::Sweeps
     return sweeps
 end
 
+function storeDMRGResult(file::String, result::DMRGResults)
+    fptr = HDF5.h5open(file, "w")
+
+    # store states
+    for (i, state) in enumerate(result.states)
+        HDF5.write(fptr, "psi_" * string(i), state)
+    end
+
+    # store observables
+    for (i, observables) in enumerate(result.observables)
+        grp_state = HDF5.create_group(fptr, string("observables_", string(i)))
+        for (name, values) in observables
+            grp_observable = HDF5.create_group(grp_state, string(name))
+            HDF5.write(grp_observable, "value", values[1])
+            HDF5.write(grp_observable, "squared", values[2])
+            HDF5.write(grp_observable, "variance", values[3])
+        end
+    end
+
+    # store overlaps
+    HDF5.write(fptr, "overlaps", result.overlaps)
+
+    HDF5.close(fptr)
+end
+
 
 function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptions)::DMRGResults
     sites = model.getSites(parameters)
@@ -44,18 +69,19 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
     end
 
     for (i, state) in enumerate(results.states)
+        push!(results.observables, Dict{String,Tuple{Float64,Float64,Float64}}())
         for (name, operator) in model.getObservables(sites, parameters)
             value = inner(state, operator, state)
             squared = inner(operator, state, operator, state)
             variance = squared - (value^2)
-            #         # results.observables[i][name] = (value)
+            results.observables[i][name] = (value, squared, variance)
         end
     end
 
-    # for i = 1:length(states)
-    #     for j = 1:i
-    #         println("<psi_", i, "|psi_", j, "> = ", inner(states[i], states[j]))
-    #     end
-    # end
+    for i = 1:options.num_states
+        for j = 1:options.num_states
+            results.overlaps[i, j] = inner(results.states[i], results.states[j])
+        end
+    end
     return results
 end
