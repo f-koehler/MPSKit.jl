@@ -23,6 +23,7 @@ function getDefaultSweeps()::Sweeps
 end
 
 function storeDMRGResult(file::String, result::DMRGResults)
+    @info "Store DMRG results …"
     fptr = HDF5.h5open(file, "w")
 
     # store states
@@ -65,6 +66,7 @@ end
 
 
 function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptions)::DMRGResults
+    @info "Building model …"
     sites = model.getSites(parameters)
     hamiltonian = model.getHamiltonian(sites, parameters)
     psi0 = randomMPS(sites)
@@ -78,6 +80,7 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
     )
 
     for j = 1:options.num_states
+        @info "Running DMRG to compute state $j …"
         if length(results.states) == 0
             _, psi = dmrg(hamiltonian, psi0, options.sweeps; outputlevel = options.quiet ? 0 : 1)
             push!(results.states, psi)
@@ -90,6 +93,7 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
     end
 
     for (i, state) in enumerate(results.states)
+        @info "Computing observables for state $i …"
         push!(results.observables, Dict{String,Tuple{Float64,Float64,Float64}}())
         for (name, operator) in model.getObservables(sites, parameters)
             value = inner(state, operator, state)
@@ -98,17 +102,20 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
             results.observables[i][name] = (value, squared, variance)
         end
 
+        @info "Computing local operators for state $i …"
         push!(results.localOperators, Dict{String,Vector{Float64}}())
         for (name, localOperator) in model.getLocalOperators()
             results.localOperators[i][name] = expect(state, localOperator[2]) * localOperator[1]
         end
 
+        @info "Computing correlation functions for state $i …"
         push!(results.correlationFunctions, Dict{String,Matrix{Float64}}())
         for (name, correlationFunction) in model.getCorrelationFunctions()
             results.correlationFunctions[i][name] = correlation_matrix(state, correlationFunction[2], correlationFunction[3]) * correlationFunction[1]
         end
     end
 
+    @info "Computing overlaps between states …"
     for i = 1:options.num_states
         for j = 1:options.num_states
             results.overlaps[i, j] = inner(results.states[i], results.states[j])

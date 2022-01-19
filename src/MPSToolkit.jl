@@ -1,9 +1,12 @@
 module MPSToolkit
 
-using ITensors
+using Logging
 using LinearAlgebra
 import ITensors.HDF5
 import ITensors.Strided
+
+using ITensors
+export setmaxdim!, setmindim!, setcutoff!, setnoise!
 
 include("DMRG.jl")
 export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps, storeDMRGResult
