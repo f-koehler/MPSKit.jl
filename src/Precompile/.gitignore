@@ -1,3 +1,3 @@
 *.jl
-!precompile_MPSTools.jl
-!precompile_MPSTools.TransverseIsing1D.jl
+!precompile_MPSToolkit.jl
+!precompile_MPSToolkit.TransverseIsing1D.jl

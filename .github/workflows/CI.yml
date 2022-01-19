@@ -55,6 +55,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using MPSTools
-            DocMeta.setdocmeta!(MPSTools, :DocTestSetup, :(using MPSTools); recursive=true)
-            doctest(MPSTools)'
+            using MPSToolkit
+            DocMeta.setdocmeta!(MPSToolkit, :DocTestSetup, :(using MPSToolkit); recursive=true)
+            doctest(MPSToolkit)'

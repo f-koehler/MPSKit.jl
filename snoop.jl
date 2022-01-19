@@ -1,7 +1,7 @@
 using SnoopCompileCore
 
 tinf = @snoopi_deep begin
-    using MPSTools
+    using MPSToolkit
 
     disableThreading()
 
@@ -17,7 +17,7 @@ tinf = @snoopi_deep begin
     parameters_quenched = parameters
     parameters_quenched["hx"] = 1.5
     tebd_options = TEBDOptions(2, 2.0, 0.1, 10, 1e-12)
-    # runTEBD(state, model, parameters_quenched, tebd_options)
+    runTEBD(state, model, parameters_quenched, tebd_options)
 end
 
 using SnoopCompile

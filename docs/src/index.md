@@ -1,15 +1,15 @@
 ```@meta
-CurrentModule = MPSTools
+CurrentModule = MPSToolkit
 ```
 
-# MPSTools
+# MPSToolkit
 
-Documentation for [MPSTools](https://github.com/f-koehler/MPSTools.jl).
+Documentation for [MPSToolkit](https://github.com/f-koehler/MPSToolkit.jl).
 
 ```@index
 
 ```
 
 ```@autodocs
-Modules = [MPSTools]
+Modules = [MPSToolkit]
 ```

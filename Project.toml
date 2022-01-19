@@ -1,5 +1,5 @@
 authors = ["Fabian Köhler <fabian.koehler@protonmail.ch>"]
-name = "MPSTools"
+name = "MPSToolkit"
 uuid = "b07acf17-ba04-41c2-93f4-9e8c134c6ecc"
 version = "0.1.0"
 

@@ -16,6 +16,7 @@ function runTEBD(psi0::MPS, model::Module, parameters::Dict{String,Any}, options
         gates = vcat(model.getGatesEven(sites, step, parameters), model.getGatesOdd(sites, step, parameters))
     elseif options.order == 2
         even = model.getGatesEven(sites, step / 2.0, parameters)
+        println(even)
         gates = vcat(even, model.getGatesOdd(sites, step, parameters), reverse(even))
     else
         throw(DomainError(order, "TEBD not implemented for specified order"))
@@ -30,7 +31,7 @@ function runTEBD(psi0::MPS, model::Module, parameters::Dict{String,Any}, options
         for step = 1:options.substeps
             apply(gates, psi; cutoff = options.cutoff)
         end
-        time += dt
+        time += options.dt
         println("$time")
     end
 end
