@@ -41,7 +41,7 @@ git-tree-sha1 = "75c6cf9d99e0efc79b724f5566726ad3ad010a01"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "0.27.12"
 
-[[deps.MPSKit]]
+[[deps.MPSTools]]
 path = ".."
 uuid = "51a413a2-1756-496f-9902-85e83e055c3e"
 version = "0.1.0"

@@ -134,7 +134,7 @@ end
 
 
 if Base.VERSION >= v"1.4.2"
-    include("../Precompile/precompile_MPSKit.TransverseIsing1D.jl")
+    include("../Precompile/precompile_MPSTools.TransverseIsing1D.jl")
     _precompile_()
 end
 

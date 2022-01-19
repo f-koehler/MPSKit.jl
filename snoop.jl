@@ -1,7 +1,7 @@
 using SnoopCompileCore
 
 tinf = @snoopi_deep begin
-    using MPSKit
+    using MPSTools
 
     disableThreading()
 

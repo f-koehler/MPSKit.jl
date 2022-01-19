@@ -1,4 +1,4 @@
-module MPSKit
+module MPSTools
 
 using ITensors
 using LinearAlgebra
@@ -18,7 +18,7 @@ include("Util.jl")
 export disableThreading
 
 if Base.VERSION >= v"1.4.2"
-    include("Precompile/precompile_MPSKit.jl")
+    include("Precompile/precompile_MPSTools.jl")
     _precompile_()
 end
 

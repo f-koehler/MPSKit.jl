@@ -1,16 +1,16 @@
-using MPSKit
+using MPSTools
 using Documenter
 
-DocMeta.setdocmeta!(MPSKit, :DocTestSetup, :(using MPSKit); recursive = true)
+DocMeta.setdocmeta!(MPSTools, :DocTestSetup, :(using MPSTools); recursive = true)
 
 makedocs(;
-    modules = [MPSKit],
+    modules = [MPSTools],
     authors = "Fabian Köhler <fabian.koehler@protonmail.ch>",
-    repo = "https://github.com/f-koehler/MPSKit.jl/blob/{commit}{path}#{line}",
-    sitename = "MPSKit.jl",
+    repo = "https://github.com/f-koehler/MPSTools.jl/blob/{commit}{path}#{line}",
+    sitename = "MPSTools.jl",
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
-        canonical = "https://f-koehler.github.io/MPSKit.jl",
+        canonical = "https://f-koehler.github.io/MPSTools.jl",
         assets = String[]
     ),
     pages = [
@@ -19,6 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo = "github.com/f-koehler/MPSKit.jl",
+    repo = "github.com/f-koehler/MPSTools.jl",
     devbranch = "main"
 )

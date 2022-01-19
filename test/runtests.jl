@@ -1,6 +1,6 @@
-using MPSKit
+using MPSTools
 using Test
 
-@testset "MPSKit.jl" begin
+@testset "MPSTools.jl" begin
     # Write your tests here.
 end
