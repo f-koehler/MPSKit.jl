@@ -1,30 +1,60 @@
 name: CI
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+    tags: "*"
   pull_request:
-    branches: [main]
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: only if it is a pull request build.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 jobs:
-  build:
-    name: Julia ${{ matrix.version }} - ${{ matrix.os }}
+  test:
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         version:
-          - "1.7.1"
+          - "1.7"
+          - "nightly"
         os:
           - ubuntu-latest
-          - windows-latest
           - macOS-latest
+          - windows-latest
+        arch:
+          - x64
     steps:
-      - name: Checkout repository.
-        uses: actions/checkout@v2
-      - name: Install julia.
-        uses: julia-actions/setup-julia@latest
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.version }}
-      - name: Build package.
-        uses: julia-actions/julia-buildpkg@latest
-      # - name: Run TransverseIsing1D example.
-      #   run: julia --project=. src/DMRG.jl -i examples/TransverseIsing1D.toml
+          arch: ${{ matrix.arch }}
+      - uses: julia-actions/cache@v1
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-action@v2
+        with:
+          files: lcov.info
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: "1"
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-docdeploy@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+      - run: |
+          julia --project=docs -e '
+            using Documenter: DocMeta, doctest
+            using MPSKit
+            DocMeta.setdocmeta!(MPSKit, :DocTestSetup, :(using MPSKit); recursive=true)
+            doctest(MPSKit)'
