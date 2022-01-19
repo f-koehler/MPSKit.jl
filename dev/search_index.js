@@ -1,3 +1,3 @@
 var documenterSearchIndex = {"docs":
-[{"location":"","page":"Home","title":"Home","text":"CurrentModule = MPSKit","category":"page"},{"location":"#MPSKit","page":"Home","title":"MPSKit","text":"","category":"section"},{"location":"","page":"Home","title":"Home","text":"Documentation for MPSKit.","category":"page"},{"location":"","page":"Home","title":"Home","text":"","category":"page"},{"location":"","page":"Home","title":"Home","text":"Modules = [MPSKit]","category":"page"}]
+[{"location":"","page":"Home","title":"Home","text":"CurrentModule = MPSTools","category":"page"},{"location":"#MPSTools","page":"Home","title":"MPSTools","text":"","category":"section"},{"location":"","page":"Home","title":"Home","text":"Documentation for MPSTools.","category":"page"},{"location":"","page":"Home","title":"Home","text":"","category":"page"},{"location":"","page":"Home","title":"Home","text":"Modules = [MPSTools]","category":"page"}]
 }
