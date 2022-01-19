@@ -2,6 +2,7 @@ mutable struct DMRGOptions
     num_states::Int64
     sweeps::Sweeps
     overlap_penalty::Float64
+    quiet::Bool
 end
 
 mutable struct DMRGResults
@@ -78,11 +79,11 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
 
     for j = 1:options.num_states
         if length(results.states) == 0
-            _, psi = dmrg(hamiltonian, psi0, options.sweeps)
+            _, psi = dmrg(hamiltonian, psi0, options.sweeps; outputlevel = options.quiet ? 0 : 1)
             push!(results.states, psi)
             psi0 = psi
         else
-            _, psi = dmrg(hamiltonian, result.states, psi0, options.sweeps; options.overlap_penalty)
+            _, psi = dmrg(hamiltonian, result.states, psi0, options.sweeps; options.overlap_penalty, outputlevel = options.quiet ? 0 : 1)
             push!(result.states, psi)
             psi0 = psi
         end

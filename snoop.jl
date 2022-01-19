@@ -7,7 +7,7 @@ tinf = @snoopi_deep begin
 
     model = getModel("TransverseIsing1D")
     parameters = model.getDefaultParameters()
-    options = DMRGOptions(1, getDefaultSweeps(), 10.0)
+    options = DMRGOptions(1, getDefaultSweeps(), 10.0, false)
     result = runDMRG(model, parameters, options)
 
     storeDMRGResult("dmrg.h5", result)
