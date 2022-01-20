@@ -15,7 +15,8 @@ tinf = @snoopi_deep begin
 
     tebd_options = TEBDOptions(2, 2.0, 0.1, 10, 1e-12)
     model.parameters["hx"] = 1.5
-    runTEBD(state, model, tebd_options)
+    result = runTEBD(state, model, tebd_options)
+    storeTEBDResult("tebd.h5", result)
 end
 
 using SnoopCompile

@@ -18,7 +18,7 @@ include("Util.jl")
 export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps, storeDMRGResult
 export getGatesEven, getGatesOdd
 export TransverseIsing1D
-export runTEBD, TEBDOptions
+export runTEBD, TEBDOptions, TEBDResults, storeTEBDResult
 export disableThreading
 
 if Base.VERSION >= v"1.4.2"

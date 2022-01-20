@@ -4,7 +4,7 @@ struct DMRGOptions
     overlap_penalty::Float64
     quiet::Bool
 
-    DMRGOptions() = new(1, getDefaultSweeps(), 10.0, false)
+    DMRGOptions(num_states::Int64 = 1, sweeps::Sweeps = getDefaultSweeps(), overlap_penalty::Float64 = 10.0, quiet::Bool = false) = new(num_states, sweeps, overlap_penalty, quiet)
 end
 
 struct DMRGResults
