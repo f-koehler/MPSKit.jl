@@ -6,26 +6,24 @@ mutable struct TEBDOptions
     cutoff::Float64
 end
 
-function runTEBD(psi0::MPS, model::Module, parameters::Dict{String,Any}, options::TEBDOptions)
-    sites = model.getSites(parameters)
+function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)
+    sites = model.sites
 
     step = options.dt / options.substeps
 
-    gates = Vector{ITensor}()
+    gates = ITensor[]
+    hj = op("Sz", sites[1]) * op("Sz", sites[2])
     if options.order == 1
-        gates = vcat(model.getGatesEven(sites, step, parameters), model.getGatesOdd(sites, step, parameters))
+        gates = vcat(getGatesEven(model, step), getGatesOdd(model, step))
     elseif options.order == 2
-        even = model.getGatesEven(sites, step / 2.0, parameters)
-        println(even)
-        gates = vcat(even, model.getGatesOdd(sites, step, parameters), reverse(even))
+        even = getGatesEven(model, step / 2.0)
+        gates = vcat(even, getGatesOdd(model, step), reverse(even))
     else
         throw(DomainError(order, "TEBD not implemented for specified order"))
     end
 
     time = 0.0
     psi = psi0
-
-    println(length(gates))
 
     while time < options.tfinal
         for step = 1:options.substeps

@@ -65,10 +65,10 @@ function storeDMRGResult(file::String, result::DMRGResults)
 end
 
 
-function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptions)::DMRGResults
+function runDMRG(model::Model, options::DMRGOptions)::DMRGResults
     @info "Building model …"
-    sites = model.getSites(parameters)
-    hamiltonian = model.getHamiltonian(sites, parameters)
+    sites = model.sites
+    hamiltonian = getHamiltonian(model)
     psi0 = randomMPS(sites)
 
     results = DMRGResults(
@@ -95,7 +95,7 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
     for (i, state) in enumerate(results.states)
         @info "Computing observables for state $i …"
         push!(results.observables, Dict{String,Tuple{Float64,Float64,Float64}}())
-        for (name, operator) in model.getObservables(sites, parameters)
+        for (name, operator) in getObservables(model)
             value = inner(state, operator, state)
             squared = inner(operator, state, operator, state)
             variance = squared - (value^2)
@@ -104,13 +104,13 @@ function runDMRG(model::Module, parameters::Dict{String,Any}, options::DMRGOptio
 
         @info "Computing local operators for state $i …"
         push!(results.localOperators, Dict{String,Vector{Float64}}())
-        for (name, localOperator) in model.getLocalOperators()
+        for (name, localOperator) in getLocalOperators(model)
             results.localOperators[i][name] = expect(state, localOperator[2]) * localOperator[1]
         end
 
         @info "Computing correlation functions for state $i …"
         push!(results.correlationFunctions, Dict{String,Matrix{Float64}}())
-        for (name, correlationFunction) in model.getCorrelationFunctions()
+        for (name, correlationFunction) in getCorrelationFunctions(model)
             results.correlationFunctions[i][name] = correlation_matrix(state, correlationFunction[2], correlationFunction[3]) * correlationFunction[1]
         end
     end

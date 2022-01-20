@@ -8,16 +8,16 @@ import ITensors.Strided
 using ITensors
 export setmaxdim!, setmindim!, setcutoff!, setnoise!
 
+include("Model.jl")
+include("SpinHalf.jl")
+include("Models/TransverseIsing1D.jl")
 include("DMRG.jl")
-export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps, storeDMRGResult
-
-include("Models.jl")
-export getModel
-
 include("TEBD.jl")
-export runTEBD, TEBDOptions
-
 include("Util.jl")
+
+export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps, storeDMRGResult
+export TransverseIsing1D
+export runTEBD, TEBDOptions
 export disableThreading
 
 if Base.VERSION >= v"1.4.2"
