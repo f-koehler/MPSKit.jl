@@ -16,6 +16,7 @@ include("TEBD.jl")
 include("Util.jl")
 
 export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps, storeDMRGResult
+export getGatesEven, getGatesOdd
 export TransverseIsing1D
 export runTEBD, TEBDOptions
 export disableThreading

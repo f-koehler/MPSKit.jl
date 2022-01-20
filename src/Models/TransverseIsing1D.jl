@@ -51,14 +51,14 @@ end
 
 function getLocalOperators(model::TransverseIsing1D)::Dict{String,Tuple{Float64,String}}
     return Dict(
-        "Sx" => (2.0, "Sx"),
-        "Sz" => (2.0, "Sz"),
+        "sx" => (2.0, "Sx"),
+        "sz" => (2.0, "Sz"),
     )
 end
 
 function getCorrelationFunctions(model::TransverseIsing1D)::Dict{String,Tuple{Float64,String,String}}
     return Dict(
-        "SzSz" => (4.0, "Sz", "Sz"),
+        "sz_sz" => (4.0, "Sz", "Sz"),
     )
 end
 

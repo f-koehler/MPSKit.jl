@@ -3,6 +3,8 @@ mutable struct DMRGOptions
     sweeps::Sweeps
     overlap_penalty::Float64
     quiet::Bool
+
+    DMRGOptions() = new(1, getDefaultSweeps(), 10.0, false)
 end
 
 mutable struct DMRGResults
