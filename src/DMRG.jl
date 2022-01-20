@@ -1,4 +1,4 @@
-mutable struct DMRGOptions
+struct DMRGOptions
     num_states::Int64
     sweeps::Sweeps
     overlap_penalty::Float64
@@ -7,7 +7,7 @@ mutable struct DMRGOptions
     DMRGOptions() = new(1, getDefaultSweeps(), 10.0, false)
 end
 
-mutable struct DMRGResults
+struct DMRGResults
     states::Vector{MPS}
     overlaps::Array{Float64,2}
     observables::Vector{Dict{String,Tuple{Float64,Float64,Float64}}}

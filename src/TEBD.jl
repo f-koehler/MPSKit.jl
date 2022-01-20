@@ -1,4 +1,4 @@
-mutable struct TEBDOptions
+struct TEBDOptions
     order::Int64
     tfinal::Float64
     dt::Float64
