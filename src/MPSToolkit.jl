@@ -8,8 +8,8 @@ import ITensors.Strided
 using ITensors
 export setmaxdim!, setmindim!, setcutoff!, setnoise!
 
-include("Model.jl")
-include("SpinHalf.jl")
+include("Models/Model.jl")
+include("Models/SpinHalf.jl")
 include("Models/TransverseIsing1D.jl")
 include("DMRG.jl")
 include("TEBD.jl")

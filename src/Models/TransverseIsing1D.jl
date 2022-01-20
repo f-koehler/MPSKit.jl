@@ -1,4 +1,4 @@
-struct TransverseIsing1D <: Model
+struct TransverseIsing1D <: SpinHalf
     parameters::Dict{String,Any}
     sites::Vector{Index{Int64}}
 
@@ -44,8 +44,8 @@ end
 function getObservables(model::TransverseIsing1D)::Dict{String,MPO}
     return Dict(
         "H" => getHamiltonian(model),
-        "Sx" => getTotalSx(model.sites),
-        "Sz" => getTotalSz(model.sites)
+        "Sx" => getTotalSx(model),
+        "Sz" => getTotalSz(model)
     )
 end
 
