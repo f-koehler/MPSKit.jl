@@ -36,6 +36,9 @@ end
 function storeTEBDResult(file::String, result::TEBDResults)
     mkpath(dirname(file))
     fptr = HDF5.h5open(file, "w")
+
+    HDF5.write(fptr, "time", result.time)
+
     grp_observables = HDF5.create_group(fptr, "observables")
     for (name, values) in result.observables
         grp_observable = HDF5.create_group(grp_observables, string(name))
