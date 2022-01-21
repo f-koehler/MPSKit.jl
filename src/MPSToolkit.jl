@@ -8,12 +8,13 @@ import ITensors.Strided
 using ITensors
 export setmaxdim!, setmindim!, setcutoff!, setnoise!
 
+include("Util.jl")
+
 include("Models/Model.jl")
 include("Models/SpinHalf.jl")
 include("Models/TransverseIsing1D.jl")
 include("DMRG.jl")
 include("TEBD.jl")
-include("Util.jl")
 
 export DMRGOptions, DMRGResults, runDMRG, getDefaultSweeps, storeDMRGResult
 export getGatesEven, getGatesOdd

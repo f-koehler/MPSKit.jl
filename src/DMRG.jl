@@ -98,10 +98,7 @@ function runDMRG(model::Model, options::DMRGOptions)::DMRGResults
         @info "Computing observables for state $i …"
         push!(results.observables, Dict{String,Tuple{Float64,Float64,Float64}}())
         for (name, operator) in getObservables(model)
-            value = inner(state, operator, state)
-            squared = inner(operator, state, operator, state)
-            variance = squared - (value^2)
-            results.observables[i][name] = (value, squared, variance)
+            results.observables[i][name] = computeExpectationValue(operator, state)
         end
 
         @info "Computing local operators for state $i …"

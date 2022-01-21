@@ -50,12 +50,10 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
     # measure initial observables
     for (name, operator) in getObservables(model)
         results.observables[name] = (Vector{Float64}(), Vector{Float64}(), Vector{Float64}())
-        value = inner(psi, operator, psi)
-        squared = inner(operator, psi, operator, psi)
-        variance = squared - (value^2)
-        push!(results.observables[name][1], value)
-        push!(results.observables[name][2], squared)
-        push!(results.observables[name][3], variance)
+        values = computeExpectationValue(operator, psi)
+        push!(results.observables[name][1], values[1])
+        push!(results.observables[name][2], values[2])
+        push!(results.observables[name][3], values[3])
     end
 
     while time < options.tfinal
@@ -67,12 +65,10 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
 
         # measure current observables
         for (name, operator) in getObservables(model)
-            value = inner(psi, operator, psi)
-            squared = inner(operator, psi, operator, psi)
-            variance = squared - (value^2)
-            push!(results.observables[name][1], value)
-            push!(results.observables[name][2], squared)
-            push!(results.observables[name][3], variance)
+            values = computeExpectationValue(operator, psi)
+            push!(results.observables[name][1], values[1])
+            push!(results.observables[name][2], values[2])
+            push!(results.observables[name][3], values[3])
         end
 
         percentage = time / options.tfinal * 100.0
