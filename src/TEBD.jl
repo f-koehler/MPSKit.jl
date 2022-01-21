@@ -69,7 +69,9 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
     sites = model.sites
 
     step = options.dt / options.substeps
+    @info "Set substep size for TEBD to $step"
 
+    @info "Construct TEBD gates …"
     gates = ITensor[]
     if options.order == 1
         gates = buildGatesTEBD1(model, step)
@@ -80,6 +82,8 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
     else
         throw(DomainError(order, "TEBD not implemented for specified order"))
     end
+    num_gates = length(gates)
+    @info "Constructed $num_gates gates"
 
     time = 0.0
     psi = deepcopy(psi0)
