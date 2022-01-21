@@ -49,7 +49,7 @@ function storeTEBDResult(file::String, result::TEBDResults)
 
     grpLocalOperators = HDF5.create_group(fptr, "local_operators")
     for (name, values) in result.localOperators
-        HDF5.write(grpLocalOperators, name, reduce(hcat, values)')
+        HDF5.write(grpLocalOperators, name, transpose(reduce(hcat, values)))
     end
 
     grpCorrelationFunctions = HDF5.create_group(fptr, "correlation_functions")
