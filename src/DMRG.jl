@@ -26,7 +26,7 @@ end
 
 function storeDMRGResult(file::String, result::DMRGResults)
     @info "Store DMRG results …"
-    makepath(dirname(file))
+    mkpath(dirname(file))
     fptr = HDF5.h5open(file, "w")
 
     # store states

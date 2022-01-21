@@ -34,7 +34,7 @@ function buildGatesTEBD3(model::Model, dt::Float64)::Vector{ITensor}
 end
 
 function storeTEBDResult(file::String, result::TEBDResults)
-    makepath(dirname(file))
+    mkpath(dirname(file))
     fptr = HDF5.h5open(file, "w")
     grp_observables = HDF5.create_group(fptr, "observables")
     for (name, values) in result.observables
