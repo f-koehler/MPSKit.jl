@@ -41,25 +41,25 @@ function getHamiltonian(model::TransverseIsing1D)::MPO
     return MPO(ampo, model.sites)
 end
 
-function getObservables(model::TransverseIsing1D)::Dict{String,MPO}
-    return Dict(
-        "H" => getHamiltonian(model),
-        "Sx" => getTotalSx(model),
-        "Sz" => getTotalSz(model)
-    )
+function getObservables(model::TransverseIsing1D)::Vector{Observable}
+    return [
+        Observable("H", getHamiltonian(model)),
+        Observable("Sx", getTotalSx(model)),
+        Observable("Sz", getTotalSz(model))
+    ]
 end
 
-function getLocalOperators(model::TransverseIsing1D)::Dict{String,Tuple{Float64,String}}
-    return Dict(
-        "sx" => (2.0, "Sx"),
-        "sz" => (2.0, "Sz"),
-    )
+function getLocalOperators(model::TransverseIsing1D)::Vector{LocalOperator}
+    return [
+        LocalOperator("sx", 2.0, "Sx"),
+        LocalOperator("sz", 2.0, "Sz"),
+    ]
 end
 
-function getCorrelationFunctions(model::TransverseIsing1D)::Dict{String,Tuple{Float64,String,String}}
-    return Dict(
-        "sz_sz" => (4.0, "Sz", "Sz"),
-    )
+function getCorrelationFunctions(model::TransverseIsing1D)::Vector{CorrelationFunction}
+    return [
+        CorrelationFunction("sz_sz", 4.0, "Sz", "Sz"),
+    ]
 end
 
 function getGatesEven(model::TransverseIsing1D, dt::Float64)::Vector{ITensor}

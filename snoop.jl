@@ -2,7 +2,6 @@ using SnoopCompileCore
 
 tinf = @snoopi_deep begin
     using MPSToolkit
-    using ITensors
 
     disableThreading()
 
@@ -17,15 +16,15 @@ tinf = @snoopi_deep begin
     state = result.states[1]
 
     tebd_options = TEBDOptions(1, 2.0, 0.1, 10, 1e-12)
-    result = runTEBD(deepcopy(state), model, tebd_options)
+    result = runTEBD(state, model, tebd_options)
     storeTEBDResult("tebd1.h5", result)
 
     tebd_options = TEBDOptions(2, 2.0, 0.1, 10, 1e-12)
-    result = runTEBD(deepcopy(state), model, tebd_options)
+    result = runTEBD(state, model, tebd_options)
     storeTEBDResult("tebd2.h5", result)
 
     tebd_options = TEBDOptions(3, 2.0, 0.1, 10, 1e-12)
-    result = runTEBD(deepcopy(state), model, tebd_options)
+    result = runTEBD(state, model, tebd_options)
     storeTEBDResult("tebd3.h5", result)
 end
 

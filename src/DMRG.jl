@@ -9,10 +9,10 @@ end
 
 struct DMRGResults
     states::Vector{MPS}
-    overlaps::Array{Float64,2}
-    observables::Vector{Dict{String,Tuple{Float64,Float64,Float64}}}
-    localOperators::Vector{Dict{String,Vector{Float64}}}
-    correlationFunctions::Vector{Dict{String,Matrix{Float64}}}
+    overlaps::Array{ComplexF64,2}
+    observables::Vector{Dict{String,Tuple{ComplexF64,ComplexF64,ComplexF64}}}
+    localOperators::Vector{Dict{String,Vector{ComplexF64}}}
+    correlationFunctions::Vector{Dict{String,Matrix{ComplexF64}}}
 end
 
 function getDefaultSweeps()::Sweeps
@@ -74,11 +74,11 @@ function runDMRG(model::Model, options::DMRGOptions)::DMRGResults
     psi0 = randomMPS(sites)
 
     results = DMRGResults(
-        Vector{MPS}(),
-        zeros(Float64, options.num_states, options.num_states),
-        Vector{Dict{String,Tuple{Float64,Float64,Float64}}}(),
-        Vector{Dict{String,Vector{Float64}}}(),
-        Vector{Dict{String,Matrix{Float64}}}()
+        MPS[],
+        zeros(ComplexF64, options.num_states, options.num_states),
+        Dict{String,Tuple{ComplexF64,ComplexF64,ComplexF64}}[],
+        Dict{String,Vector{ComplexF64}}[],
+        Dict{String,Matrix{ComplexF64}}[]
     )
 
     for j = 1:options.num_states
@@ -96,21 +96,21 @@ function runDMRG(model::Model, options::DMRGOptions)::DMRGResults
 
     for (i, state) in enumerate(results.states)
         @info "Computing observables for state $i …"
-        push!(results.observables, Dict{String,Tuple{Float64,Float64,Float64}}())
-        for (name, operator) in getObservables(model)
-            results.observables[i][name] = computeExpectationValue(operator, state)
+        push!(results.observables, Dict{String,Tuple{ComplexF64,ComplexF64,ComplexF64}}())
+        for observable in getObservables(model)
+            results.observables[i][observable.name] = expect(state, observable)
         end
 
         @info "Computing local operators for state $i …"
-        push!(results.localOperators, Dict{String,Vector{Float64}}())
-        for (name, localOperator) in getLocalOperators(model)
-            results.localOperators[i][name] = expect(state, localOperator[2]) * localOperator[1]
+        push!(results.localOperators, Dict{String,Vector{ComplexF64}}())
+        for localOperator in getLocalOperators(model)
+            results.localOperators[i][localOperator.name] = expect(state, localOperator)
         end
 
         @info "Computing correlation functions for state $i …"
-        push!(results.correlationFunctions, Dict{String,Matrix{Float64}}())
-        for (name, correlationFunction) in getCorrelationFunctions(model)
-            results.correlationFunctions[i][name] = correlation_matrix(state, correlationFunction[2], correlationFunction[3]) * correlationFunction[1]
+        push!(results.correlationFunctions, Dict{String,Matrix{ComplexF64}}())
+        for correlationFunction in getCorrelationFunctions(model)
+            results.correlationFunctions[i][correlationFunction.name] = expect(state, correlationFunction)
         end
     end
 
