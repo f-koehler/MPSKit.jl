@@ -67,7 +67,7 @@ function getGatesEven(model::TransverseIsing1D, dt::Float64)::Vector{ITensor}
         throw(DomainError(model.parameters["pbc"], "not implemented for periodic boundary conditions"))
     end
 
-    gates = Vector{ITensor}()
+    gates = ITensor[]
 
     L = model.parameters["L"]
     J = model.parameters["J"]
@@ -98,7 +98,7 @@ function getGatesOdd(model::TransverseIsing1D, dt::Float64)::Vector{ITensor}
         throw(DomainError(model.parameters["pbc"], "not implemented for periodic boundary conditions"))
     end
 
-    gates = Vector{ITensor}()
+    gates = ITensor[]
 
     L = model.parameters["L"]
     J = model.parameters["J"]

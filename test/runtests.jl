@@ -1,9 +1,6 @@
 using MPSToolkit
 using Test
-
-# @testset "MPSToolkit.jl" begin
-#     # Write your tests here.
-# end
+using ITensors
 
 @testset "TransverseIsing1D" begin
     model = TransverseIsing1D(3)
@@ -29,3 +26,25 @@ using Test
     end
 end
 
+@testset "Gates" begin
+    model = TransverseIsing1D(2)
+    model.parameters["J"] = 1.0
+    model.parameters["hx"] = 0.0
+    model.parameters["hz"] = 0.1
+    even = getGatesEven(model, 0.1)
+    odd = getGatesOdd(model, 0.3)
+    @test length(even) == 1
+    @test length(odd) == 1
+
+    psi = productMPS(model.sites, n -> "Dn")
+
+    @test expect(psi, "Sz") ≈ [-0.5, -0.5]
+    for i = 1:10
+        psi = apply(odd, psi)
+    end
+    @test expect(psi, "Sz") ≈ [-0.5, -0.5]
+    for i = 1:10
+        psi = apply(even, psi)
+    end
+    @test expect(psi, "Sz") ≈ [-0.5, -0.5]
+end
