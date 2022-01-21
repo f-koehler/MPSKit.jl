@@ -11,9 +11,29 @@ struct TEBDResults
     observables::Dict{String,Tuple{Vector{Float64},Vector{Float64},Vector{Float64}}}
 end
 
+function buildGatesTEBD1(model::Model, dt::Float64)::Vector{ITensor}
+    return vcat(getGatesEven(model, dt), getGatesOdd(model, dt))
+end
+
+function buildGatesTEBD2(model::Model, dt::Float64)::Vector{ITensor}
+    even = getGatesEven(model, dt / 2.0)
+    return vcat(even, getGatesOdd(model, dt), reverse(even))
+end
+
+function buildGatesTEBD3(model::Model, dt::Float64)::Vector{ITensor}
+    s = 1.0 / (2.0 - (2.0^(1.0 / 3.0)))
+    dt1 = s * dt
+    dt2 = (1 - 2.0 * s) * dt
+    return vcat(
+        buildGatesTEBD2(model, dt1),
+        buildGatesTEBD2(model, dt2),
+        buildGatesTEBD2(model, dt1)
+    )
+end
+
 function storeTEBDResult(file::String, result::TEBDResults)
     fptr = HDF5.h5open(file, "w")
-    grp_observables = fptr.create_group(fptr, "observables")
+    grp_observables = HDF5.create_group(fptr, "observables")
     for (name, values) in result.observables
         grp_observable = HDF5.create_group(grp_observables, string(name))
         HDF5.write(grp_observable, "value", values[1])
@@ -30,10 +50,11 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
 
     gates = ITensor[]
     if options.order == 1
-        gates = vcat(getGatesEven(model, step), getGatesOdd(model, step))
+        gates = buildGatesTEBD1(model, step)
     elseif options.order == 2
-        even = getGatesEven(model, step / 2.0)
-        gates = vcat(even, getGatesOdd(model, step), reverse(even))
+        gates = buildGatesTEBD2(model, step)
+    elseif options.order == 3
+        gates = buildGatesTEBD3(model, step)
     else
         throw(DomainError(order, "TEBD not implemented for specified order"))
     end
@@ -58,7 +79,7 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
 
     while time < options.tfinal
         for step = 1:options.substeps
-            apply(gates, psi; cutoff = options.cutoff)
+            psi = apply(gates, psi; cutoff = options.cutoff)
         end
         time += options.dt
         push!(results.time, time)
