@@ -1,7 +1,7 @@
 name = "MPSToolkit"
 uuid = "b07acf17-ba04-41c2-93f4-9e8c134c6ecc"
 authors = ["Fabian Köhler <fabian.koehler@protonmail.ch>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
