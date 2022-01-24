@@ -1,3 +1,5 @@
+export TEBDOptions, TEBDResults, storeTEBDResult, runTEBD
+
 struct TEBDOptions
     order::Int64
     tfinal::Float64

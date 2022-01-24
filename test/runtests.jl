@@ -37,13 +37,13 @@ end
 
     psi = productMPS(model.sites, n -> "Dn")
 
-    @test expect(psi, "Sz") ≈ [-0.5, -0.5]
+    @test MPSToolkit.ITensors.expect(psi, "Sz") ≈ [-0.5, -0.5]
     for i = 1:10
-        psi = apply(odd, psi)
+        psi = MPSToolkit.ITensors.apply(odd, psi)
     end
-    @test expect(psi, "Sz") ≈ [-0.5, -0.5]
+    @test MPSToolkit.ITensors.expect(psi, "Sz") ≈ [-0.5, -0.5]
     for i = 1:10
-        psi = apply(even, psi)
+        psi = MPSToolkit.ITensors.apply(even, psi)
     end
-    @test expect(psi, "Sz") ≈ [-0.5, -0.5]
+    @test MPSToolkit.ITensors.expect(psi, "Sz") ≈ [-0.5, -0.5]
 end

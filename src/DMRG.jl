@@ -1,3 +1,5 @@
+export DMRGOptions, DMRGResults, storeDMRGResult, runDMRG
+
 struct DMRGOptions
     num_states::Int64
     sweeps::Sweeps

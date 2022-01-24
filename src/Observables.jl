@@ -1,3 +1,5 @@
+export LocalOperator, CorrelationFunction, Observable, expect
+
 struct LocalOperator
     name::String
     prefactor::Float64

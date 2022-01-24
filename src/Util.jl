@@ -1,3 +1,5 @@
+export disableThreading
+
 function disableThreading()
     Strided.disable_threads()
     ITensors.disable_threaded_blocksparse()

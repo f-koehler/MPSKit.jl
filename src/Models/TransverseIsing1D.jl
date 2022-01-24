@@ -1,3 +1,5 @@
+export TransverseIsing1D, getHamiltonian, getObservables, getLocalOperators, getCorrelationFunctions, getGatesEven, getGatesOdd
+
 struct TransverseIsing1D <: SpinHalf
     parameters::Dict{String,Any}
     sites::Vector{Index{Int64}}
