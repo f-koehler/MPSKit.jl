@@ -79,14 +79,15 @@ function getGatesEven(model::TransverseIsing1D, dt::Float64)::Vector{ITensor}
         s2 = model.sites[j+1]
 
         hj = -4.0 * J * op("Sz", s1) * op("Sz", s2)
-        -2.0 * hx * op("Sx", s1)
-        -2.0 * hz * op("Sz", s1)
+        hj -= 2.0 * hx * op("Sx", s1) * op("Id", s2)
+        hj -= 2.0 * hz * op("Sz", s1) * op("Id", s2)
 
         push!(gates, exp(-1.0im * dt * hj))
     end
 
     if L % 2 == 0
-        hj = -2.0 * hx * op("Sx", model.sites[L]) - 2.0 * hz * op("Sz", model.sites[L])
+        hj = -2.0 * hx * op("Sx", model.sites[L])
+        hj -= 2.0 * hz * op("Sz", model.sites[L])
         push!(gates, exp(-1.0im * dt * hj))
     end
 
@@ -110,14 +111,15 @@ function getGatesOdd(model::TransverseIsing1D, dt::Float64)::Vector{ITensor}
         s2 = model.sites[j+1]
 
         hj = -4.0 * J * op("Sz", s1) * op("Sz", s2)
-        -2.0 * hx * op("Sx", s1)
-        -2.0 * hz * op("Sz", s1)
+        hj -= 2.0 * hx * op("Sx", s1) * op("Id", s2)
+        hj -= 2.0 * hz * op("Sz", s1) * op("Id", s2)
 
         push!(gates, exp(-1.0im * dt * hj))
     end
 
     if L % 2 == 1
-        hj = -2.0 * hx * op("Sx", model.sites[L]) - 2.0 * hz * op("Sz", model.sites[L])
+        hj = -2.0 * hx * op("Sx", model.sites[L])
+        hj -= 2.0 * hz * op("Sz", model.sites[L])
         push!(gates, exp(-1.0im * dt * hj))
     end
 
