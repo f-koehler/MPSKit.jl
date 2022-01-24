@@ -6,7 +6,7 @@ import ITensors.HDF5
 import ITensors.Strided
 
 using ITensors
-export setmaxdim!, setmindim!, setcutoff!, setnoise!
+export setmaxdim!, setmindim!, setcutoff!, setnoise!, Sweeps
 
 include("Observables.jl")
 include("Models/Model.jl")
