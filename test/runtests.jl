@@ -1,6 +1,5 @@
 using MPSToolkit
 using Test
-using ITensors
 
 @testset "TransverseIsing1D" begin
     model = TransverseIsing1D(3)
