@@ -36,35 +36,35 @@ function buildGatesTEBD3(model::Model, dt::Float64)::Vector{ITensor}
 end
 
 function storeTEBDResult(file::String, result::TEBDResults)
-    # mkpath(dirname(file))
-    # fptr = HDF5.h5open(file, "w")
+    mkpath(dirname(file))
+    fptr = HDF5.h5open(file, "w")
 
-    # HDF5.write(fptr, "time", result.time)
+    HDF5.write(fptr, "time", result.time)
 
-    # grp_observables = HDF5.create_group(fptr, "observables")
-    # for (name, values) in result.observables
-    #     grp_observable = HDF5.create_group(grp_observables, string(name))
-    #     HDF5.write(grp_observable, "value", values[1])
-    #     HDF5.write(grp_observable, "squared", values[2])
-    #     HDF5.write(grp_observable, "variance", values[3])
-    # end
+    grp_observables = HDF5.create_group(fptr, "observables")
+    for (name, values) in result.observables
+        grp_observable = HDF5.create_group(grp_observables, string(name))
+        HDF5.write(grp_observable, "value", values[1])
+        HDF5.write(grp_observable, "squared", values[2])
+        HDF5.write(grp_observable, "variance", values[3])
+    end
 
-    # grpLocalOperators = HDF5.create_group(fptr, "local_operators")
-    # for (name, values) in result.localOperators
-    #     HDF5.write(grpLocalOperators, name, reduce(hcat, values))
-    # end
+    grpLocalOperators = HDF5.create_group(fptr, "local_operators")
+    for (name, values) in result.localOperators
+        HDF5.write(grpLocalOperators, name, reduce(hcat, values))
+    end
 
-    # grpCorrelationFunctions = HDF5.create_group(fptr, "correlation_functions")
-    # for (name, values) in result.correlationFunctions
-    #     # FIXME: there should be definitely a clever way to do this using reduce, hcat and reshape
-    #     mat = Array{ComplexF64,3}(undef, size(values[1])[1], size(values[1])[1], length(result.time))
-    #     for (i, _) in enumerate(result.time)
-    #         mat[:, :, i] = values[i]
-    #     end
-    #     HDF5.write(grpCorrelationFunctions, name, mat)
-    # end
+    grpCorrelationFunctions = HDF5.create_group(fptr, "correlation_functions")
+    for (name, values) in result.correlationFunctions
+        # FIXME: there should be definitely a clever way to do this using reduce, hcat and reshape
+        mat = Array{ComplexF64,3}(undef, size(values[1])[1], size(values[1])[1], length(result.time))
+        for (i, _) in enumerate(result.time)
+            mat[:, :, i] = values[i]
+        end
+        HDF5.write(grpCorrelationFunctions, name, mat)
+    end
 
-    # HDF5.close(fptr)
+    HDF5.close(fptr)
 end
 
 function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
@@ -124,25 +124,25 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
     while time < options.tfinal
         psi = apply(gates, psi; cutoff = options.cutoff)
         time += options.dt
-        # push!(results.time, time)
+        push!(results.time, time)
 
-        # # measure current observables
-        # for observable in getObservables(model)
-        #     values = expect(psi, observable)
-        #     push!(results.observables[observable.name][1], values[1])
-        #     push!(results.observables[observable.name][2], values[2])
-        #     push!(results.observables[observable.name][3], values[3])
-        # end
+        # measure current observables
+        for observable in getObservables(model)
+            values = expect(psi, observable)
+            push!(results.observables[observable.name][1], values[1])
+            push!(results.observables[observable.name][2], values[2])
+            push!(results.observables[observable.name][3], values[3])
+        end
 
-        # # measure initial local operators
-        # for localOperator in getLocalOperators(model)
-        #     push!(results.localOperators[localOperator.name], expect(psi, localOperator))
-        # end
+        # measure initial local operators
+        for localOperator in getLocalOperators(model)
+            push!(results.localOperators[localOperator.name], expect(psi, localOperator))
+        end
 
-        # # measure initial correlation functions
-        # for correlationFunction in getCorrelationFunctions(model)
-        #     push!(results.correlationFunctions[correlationFunction.name], expect(psi, correlationFunction))
-        # end
+        # measure initial correlation functions
+        for correlationFunction in getCorrelationFunctions(model)
+            push!(results.correlationFunctions[correlationFunction.name], expect(psi, correlationFunction))
+        end
 
         percentage = time / options.tfinal * 100.0
 
