@@ -6,7 +6,7 @@ tinf = @snoopi_deep begin
     disableThreading()
 
     model = TransverseIsing1D(8)
-    options = DMRGOptions(1, getDefaultSweeps(), 10.0, false)
+    options = DMRGOptions()
     result = runDMRG(model, options)
 
     storeDMRGResult("dmrg.h5", result)
