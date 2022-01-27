@@ -87,6 +87,8 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
     num_gates = length(gates)
     @info "Constructed $num_gates gates"
 
+    gates = repeat(gates, options.substeps)
+
     time = 0.0
     psi = deepcopy(psi0)
     results = TEBDResults(
@@ -120,9 +122,7 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
     end
 
     while time < options.tfinal
-        for step = 1:options.substeps
-            psi = apply(gates, psi; cutoff = options.cutoff)
-        end
+        psi = apply(gates, psi; cutoff = options.cutoff)
         time += options.dt
         push!(results.time, time)
 
