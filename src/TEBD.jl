@@ -146,7 +146,9 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
 
         percentage = time / options.tfinal * 100.0
 
-        @info "Finished time=$time ($percentage%)"
+        timestamp = Dates.format(now(), "YYYY-mm-dd HH:MM:SS")
+
+        @info "$timestamp: Finished time=$time ($percentage%)"
     end
 
     return results
