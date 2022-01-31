@@ -1,7 +1,7 @@
 name = "MPSToolkit"
 uuid = "b07acf17-ba04-41c2-93f4-9e8c134c6ecc"
 authors = ["Fabian Köhler <fabian.koehler@protonmail.ch>"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
