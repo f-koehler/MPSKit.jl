@@ -13,6 +13,7 @@ struct TEBDResults
     observables::Dict{String,Tuple{Vector{ComplexF64},Vector{ComplexF64},Vector{ComplexF64}}}
     localOperators::Dict{String,Vector{Vector{ComplexF64}}}
     correlationFunctions::Dict{String,Vector{Matrix{ComplexF64}}}
+    maxBondDimension::Vector{Int64}
 end
 
 function buildGatesTEBD1(model::Model, dt::Float64)::Vector{ITensor}
@@ -64,6 +65,8 @@ function storeTEBDResult(file::String, result::TEBDResults)
         HDF5.write(grpCorrelationFunctions, name, mat)
     end
 
+    HDF5.write(fptr, "max_bond_dimension", result.maxBondDimension)
+
     HDF5.close(fptr)
 end
 
@@ -95,7 +98,8 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
         Float64[],
         Dict{String,Tuple{Vector{ComplexF64},Vector{ComplexF64},Vector{ComplexF64}}}(),
         Dict{String,Vector{Vector{ComplexF64}}}(),
-        Dict{String,Vector{Matrix{ComplexF64}}}()
+        Dict{String,Vector{Matrix{ComplexF64}}}(),
+        Int64[]
     )
 
     push!(results.time, time)
@@ -107,6 +111,7 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
         push!(results.observables[observable.name][1], values[1])
         push!(results.observables[observable.name][2], values[2])
         push!(results.observables[observable.name][3], values[3])
+        push!(results.maxBondDimension, maxlinkdim(psi))
     end
 
     # measure initial local operators
@@ -121,6 +126,8 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
         push!(results.correlationFunctions[correlationFunction.name], expect(psi, correlationFunction))
     end
 
+    maxBondDimension = 0
+
     while time < options.tfinal
         psi = apply(gates, psi; cutoff = options.cutoff)
         time += options.dt
@@ -132,6 +139,8 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
             push!(results.observables[observable.name][1], values[1])
             push!(results.observables[observable.name][2], values[2])
             push!(results.observables[observable.name][3], values[3])
+            maxBondDimension = maxlinkdim(psi)
+            push!(results.maxBondDimension, maxBondDimension)
         end
 
         # measure initial local operators
@@ -149,6 +158,7 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
         timestamp = Dates.format(now(), "YYYY-mm-dd HH:MM:SS")
 
         @info "$timestamp: Finished time=$time ($percentage%)"
+        @info "                     max bond dimension=$maxBondDimension"
     end
 
     return results
