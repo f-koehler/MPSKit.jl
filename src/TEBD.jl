@@ -132,6 +132,7 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
         psi = apply(gates, psi; cutoff = options.cutoff)
         time += options.dt
         push!(results.time, time)
+        push!(results.maxBondDimension, maxBondDimension)
 
         # measure current observables
         for observable in getObservables(model)
@@ -140,7 +141,6 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
             push!(results.observables[observable.name][2], values[2])
             push!(results.observables[observable.name][3], values[3])
             maxBondDimension = maxlinkdim(psi)
-            push!(results.maxBondDimension, maxBondDimension)
         end
 
         # measure initial local operators
