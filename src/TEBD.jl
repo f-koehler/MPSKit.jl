@@ -103,6 +103,7 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
     )
 
     push!(results.time, time)
+    push!(results.maxBondDimension, maxlinkdim(psi))
 
     # measure initial observables
     for observable in getObservables(model)
@@ -111,7 +112,6 @@ function runTEBD(psi0::MPS, model::Model, options::TEBDOptions)::TEBDResults
         push!(results.observables[observable.name][1], values[1])
         push!(results.observables[observable.name][2], values[2])
         push!(results.observables[observable.name][3], values[3])
-        push!(results.maxBondDimension, maxlinkdim(psi))
     end
 
     # measure initial local operators
