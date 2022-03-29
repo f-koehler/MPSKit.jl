@@ -14,7 +14,7 @@ SnoopCompile = "aa65fe97-06da-5843-b5b1-d5d13cad87d2"
 SnoopCompileCore = "e2b509da-e806-4183-be48-004708413034"
 
 [compat]
-ITensors = "0.2"
+ITensors = "0.2, 0.3"
 MKL = "0.4, 0.5"
 ProgressMeter = "1.7"
 SnoopCompile = "2.8"
